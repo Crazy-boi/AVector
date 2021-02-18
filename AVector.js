@@ -4,7 +4,7 @@ function AVector(x, y) {
 }
 
 AVector.prototype = {
-    add: function(v, a="x") {
+    add: function(v, a="n") {
         if (v instanceof AVector) {
             this.x += v.x;
             this.y += v.y;
@@ -12,25 +12,57 @@ AVector.prototype = {
             if (typeof a == "number") {
                 this.x += v;
                 this.y += a;
-            } else {
+            } else if (typeof v == "number") {
                 this.x += v;
                 this.y += v;
             }
         }
         return this;
     },
-    subtract: function(v) {
+    sub: function(v, a="n") {
         if (v instanceof AVector) {
             this.x -= v.x;
             this.y -= v.y;
         } else {
-            this.x -= v;
-            this.y -= v;
+            if (typeof a == "number") {
+                this.x -= v;
+                this.y -= a;
+            } else if (typeof v == "number") {
+                this.x -= v;
+                this.y -= v;
+            }
+        }
+        return this;
+    },
+    mult: function(v, a="x") {
+        if (typeof v == "number") {
+            if (typeof a == "number") {
+                this.x *= v;
+                this.y *= a;
+            } else {
+                this.x *= v;
+                this.y *= v;
+            }
+        }
+        return this;
+    },
+    div: function(v, a="x") {
+        if (typeof v == "number") {
+            if (typeof a == "number") {
+                this.x /= v;
+                this.y /= a;
+            } else {
+                this.x /= v;
+                this.y /= v;
+            }
         }
         return this;
     }
 }
 
+// Test
 let v = new AVector(1, 1);
-v.add(1, 2);
+
+v.mult(5, 2);
+
 write(v);
