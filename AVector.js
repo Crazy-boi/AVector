@@ -1,4 +1,4 @@
-function AVector(x, y) {
+function AVector(x, y) {    //help: https://gist.github.com/winduptoy/a1aa09c3499e09edbd33
     this.x = x;
     this.y = y;
 }
@@ -198,9 +198,3 @@ AVector.div = function(v, a, b="div_y") {
 AVector.dist = function(v, a) {
     return new AVector(v.x - a.x, v.y - a.y).length();
 };
-//help: https://gist.github.com/winduptoy/a1aa09c3499e09edbd33
-
-// Test
-let v = new AVector(1, 1);
-v.setAngle(Math.PI/2);
-write(v);
