@@ -3,22 +3,33 @@ function AVector(x, y) {
     this.y = y;
 }
 
+// Instance methods
 AVector.prototype = {
-    angle: function(inDegrees=false) {
+    angle: function(type=0) {
+        //let a = -Math.atan2(-this.y, this.x);  goes to negative angles for negative y's (max is PI/2 to each side)
         let a;
         a = Math.atan(this.y / this.x);
         if (this.x < 0)
             a += Math.PI;
         if (a < 0)
-            a = 2*Math.PI + a;
-        if (typeof inDegrees == "boolean" && inDegrees)
-            return a/2/Math.PI*360;
-        return a;
+            a = Math.PI*2 + a;
+        switch (type) {
+            case 1: return a/2/Math.PI*360;
+            case 2: return a/Math.PI;
+            default: return a;
+        }
+    },
+    setAngle: function(a) {
+        let l = this.length();
+        this.x = Math.cos(a);
+        this.y = Math.sin(a);
+        if (l != null || l > 0)
+            this.mult(l);
+        return this;
     },
     length: function() {
         return Math.sqrt(this.x * this.x + this.y * this.y);
     },
-
     add: function(v, a="sub_y") {
         if (v instanceof AVector) {
             this.x += v.x;
@@ -49,31 +60,35 @@ AVector.prototype = {
         }
         return this;
     },
-    mult: function(v, a="mult_y") {
-        if (typeof v == "number") {
-            if (typeof a == "number") {
-                this.x *= v;
+    mult: function(a, b="mult_y") {
+        if (typeof a == "number") {
+            if (typeof b == "number") {
+                this.x *= a;
+                this.y *= b;
+            } else {
+                this.x *= a;
                 this.y *= a;
-            } else {
-                this.x *= v;
-                this.y *= v;
             }
         }
         return this;
     },
-    div: function(v, a="div_y") {
-        if (typeof v == "number") {
-            if (typeof a == "number") {
-                this.x /= v;
+    div: function(a, b="div_y") {
+        if (typeof a == "number") {
+            if (typeof b == "number") {
+                this.x /= a;
+                this.y /= b;
+            } else {
+                this.x /= a;
                 this.y /= a;
-            } else {
-                this.x /= v;
-                this.y /= v;
             }
         }
         return this;
     },
-
+    negative: function() {
+        this.x = -this.x;
+        this.y = -this.y;
+        return this;
+    },
     normalize: function() {
         let a = this.length();
         this.x /= a;
@@ -87,18 +102,105 @@ AVector.prototype = {
         }
         return this;
     },
+    dot: function(v, a="manual_y") {
+        if (v instanceof AVector) {
+            return this.x * v.x + this.y * v.y;
+        } else if (typeof v == "number" && typeof a == "number") {
+            return this.x * v + this.y * a;
+        }
+    },
+    angleTo: function(v, type=0) {
+        if (v instanceof AVector) {
+            /*let a = Math.abs(v.angle() - this.angle());
+            if (a > Math.PI)
+                a = 2*Math.PI - a;*/
+            let a = Math.acos(this.dot(v) / (this.length() * v.length()));
+            switch (type) {
+                case 1: return a/2/Math.PI*360;
+                case 2: return a/Math.PI;
+                default: return a;
+            }
+        }
+    },
+    dist: function(v, a="manual_y") {
+        if (v instanceof AVector) {
+            return new AVector(this.x - v.x, this.y - v.y).length();
+        } else if (typeof v == "number" && typeof a == "number") {
+            return new AVector(this.x - v, this.y - a).length();
+        }
+    },
 
-
-
+    set: function(x, y) {
+        this.x = x;
+        this.y = y;
+        return this;
+    },
+    equals: function(v, a="manual_y") {
+        if (v instanceof AVector) {
+            return this.x === v.x && this.y === v.y;
+        } else if (typeof v == "number" && typeof a == "number") {
+            return this.x === v && this.y === a;
+        }
+    },
     clone: function() {
         return new AVector(this.x, this.y);
     }
 }
 
+// Static methods
+AVector.negative = function(v) {
+    return new AVector(-v.x, -v.y);
+};
+AVector.add = function(v, a, b="add_y") {
+    if (a instanceof AVector) {
+        return new AVector(v.x + a.x, v.y + a.y);
+    } else if (typeof a == "number") {
+        if (typeof b == "number") {
+            return new AVector(v.x + a, v.y + b);
+        } else {
+            return new AVector(v.x + a, v.y + a);
+        }
+    }
+};
+AVector.sub = function(v, a, b="sub_y") {
+    if (a instanceof AVector) {
+        return new AVector(v.x - a.x, v.y - a.y);
+    } else if (typeof a == "number") {
+        if (typeof b == "number") {
+            return new AVector(v.x - a, v.y - b);
+        } else {
+            return new AVector(v.x - a, v.y - a);
+        }
+    }
+};
+AVector.mult = function(v, a, b="mult_y") {
+    if (a instanceof AVector) {
+        return new AVector(v.x * a.x, v.y * a.y);
+    } else if (typeof a == "number") {
+        if (typeof b == "number") {
+            return new AVector(v.x * a, v.y * b);
+        } else {
+            return new AVector(v.x * a, v.y * a);
+        }
+    }
+};
+AVector.div = function(v, a, b="div_y") {
+    if (a instanceof AVector) {
+        return new AVector(v.x / a.x, v.y / a.y);
+    } else if (typeof a == "number") {
+        if (typeof b == "number") {
+            return new AVector(v.x / a, v.y / b);
+        } else {
+            return new AVector(v.x / a, v.y / a);
+        }
+    }
+};
+AVector.dist = function(v, a) {
+    return new AVector(v.x - a.x, v.y - a.y).length();
+};
+//help: https://gist.github.com/winduptoy/a1aa09c3499e09edbd33
+
 // Test
 let v = new AVector(1, 1);
-
+v.setAngle(Math.PI/2);
 write(v);
-
-//write(v.mult(5, 3));
-//write(v.angle(true));
