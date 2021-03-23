@@ -39,7 +39,7 @@ AVector.prototype = {
     length: function() {
         return Math.sqrt(this.x * this.x + this.y * this.y);
     },
-    add: function(v, a="sub_y") {
+    add: function(v, a="add_y") {
         if (v instanceof AVector) {
             this.x += v.x;
             this.y += v.y;
@@ -93,7 +93,6 @@ AVector.prototype = {
         }
         return this;
     },
-
     negative: function() {
         this.x = -this.x;
         this.y = -this.y;
@@ -112,7 +111,18 @@ AVector.prototype = {
         }
         return this;
     },
-
+    limitX: function(a) {
+        if (typeof a == "number" && Math.abs(this.x) > Math.abs(a)) {
+            this.x = a * Math.sign(this.x);
+        }
+        return this;
+    },
+    limitY: function(a) {
+        if (typeof a == "number" && Math.abs(this.y) > Math.abs(a)) {
+            this.y = a * Math.sign(this.y);
+        }
+        return this;
+    },
     dot: function(v, a="manual_y") {
         if (v instanceof AVector) {
             return this.x * v.x + this.y * v.y;
@@ -133,7 +143,6 @@ AVector.prototype = {
             }
         }
     },
-
     dist: function(v, a="manual_y") {
         if (v instanceof AVector) {
             return new AVector(this.x - v.x, this.y - v.y).length();
@@ -144,6 +153,14 @@ AVector.prototype = {
 
     set: function(x, y) {
         this.x = x;
+        this.y = y;
+        return this;
+    },
+    setX: function(x) {
+        this.x = x;
+        return this;
+    },
+    setY: function(y) {
         this.y = y;
         return this;
     },
